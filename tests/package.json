@@ -1,0 +1,13 @@
+{
+  "private": true,
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:fast": "FAST=1 vitest run"
+  },
+  "devDependencies": {
+    "vitest": "^3",
+    "zod": "^3",
+    "typescript": "^5.7"
+  }
+}

@@ -1,0 +1,125 @@
+{
+  "id": "sample-2",
+  "title": "Fix Auth Token Refresh Race Condition",
+  "date": "2026-02-21T09:15:00Z",
+  "previousEntryId": "sample",
+  "git": {
+    "branch": "43-fix-refresh-race",
+    "commitHash": "e4f5a6b",
+    "baseRef": "main",
+    "prNumber": 43
+  },
+  "sections": [
+    {
+      "type": "kpi-bar",
+      "title": "PR Impact",
+      "cards": [
+        { "label": "Lines Added", "value": 156, "delta": -691, "trend": "down" },
+        { "label": "Lines Removed", "value": 42, "delta": -81, "trend": "down" },
+        { "label": "Files Changed", "value": 6, "delta": -8, "trend": "down" },
+        { "label": "Commits", "value": 3, "delta": -4, "trend": "down" }
+      ]
+    },
+    {
+      "type": "prose",
+      "title": "Summary",
+      "content": "Fixes a race condition in the token refresh flow where concurrent API calls could each trigger a refresh, producing duplicate tokens and invalidating the first. The fix introduces a **mutex lock** on the refresh endpoint — the first request acquires the lock, subsequent requests wait and receive the same refreshed token.\n\nAlso adds retry logic in the auth middleware: if a token is rejected during the brief refresh window, the middleware retries once after a 100ms delay before returning `401`. This eliminates the \"flash logout\" bug users reported under heavy load."
+    },
+    {
+      "type": "heatmap",
+      "title": "Change Heatmap",
+      "root": {
+        "name": ".",
+        "changes": 198,
+        "children": [
+          {
+            "name": "src",
+            "changes": 148,
+            "children": [
+              {
+                "name": "auth",
+                "changes": 98,
+                "children": [
+                  { "name": "refresh.ts", "changes": 52 },
+                  { "name": "middleware.ts", "changes": 31 },
+                  { "name": "lock.ts", "changes": 15 }
+                ]
+              },
+              {
+                "name": "api",
+                "changes": 30,
+                "children": [
+                  { "name": "middleware.ts", "changes": 18 },
+                  { "name": "errorHandler.ts", "changes": 12 }
+                ]
+              },
+              {
+                "name": "config",
+                "changes": 20,
+                "children": [
+                  { "name": "auth.ts", "changes": 20 }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "tests",
+            "changes": 50,
+            "children": [
+              { "name": "auth-refresh.test.ts", "changes": 35 },
+              { "name": "auth-retry.test.ts", "changes": 15 }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "test-suite",
+      "title": "Unit Tests (vitest)",
+      "runner": "vitest",
+      "passed": 152,
+      "failed": 0,
+      "skipped": 3,
+      "total": 155,
+      "duration": 3.6,
+      "delta": {
+        "passed": 10,
+        "failed": -2,
+        "skipped": -2,
+        "total": 6,
+        "newTests": 6
+      }
+    },
+    {
+      "type": "test-suite",
+      "title": "Integration Tests (vitest)",
+      "runner": "vitest",
+      "passed": 31,
+      "failed": 0,
+      "skipped": 1,
+      "total": 32,
+      "duration": 13.1,
+      "delta": {
+        "passed": 3,
+        "failed": 0,
+        "skipped": 0,
+        "total": 3,
+        "newTests": 3
+      }
+    },
+    {
+      "type": "file-list",
+      "title": "Changed Files",
+      "files": [
+        { "path": "src/auth/refresh.ts", "status": "modified", "linesAdded": 38, "linesRemoved": 12, "reason": "Added mutex lock around token refresh to prevent race condition" },
+        { "path": "src/auth/middleware.ts", "status": "modified", "linesAdded": 22, "linesRemoved": 8, "reason": "Added single-retry with 100ms delay on token rejection" },
+        { "path": "src/auth/lock.ts", "status": "added", "linesAdded": 15, "reason": "Simple async mutex implementation for refresh serialization" },
+        { "path": "src/api/middleware.ts", "status": "modified", "linesAdded": 12, "linesRemoved": 6, "reason": "Propagate retry headers from auth middleware to API layer" },
+        { "path": "src/api/errorHandler.ts", "status": "modified", "linesAdded": 8, "linesRemoved": 4, "reason": "Distinguish refresh-in-progress from genuine auth failures" },
+        { "path": "src/config/auth.ts", "status": "modified", "linesAdded": 11, "linesRemoved": 2, "reason": "Added REFRESH_LOCK_TIMEOUT and RETRY_DELAY_MS config options" },
+        { "path": "tests/auth-refresh.test.ts", "status": "added", "linesAdded": 35, "reason": "Tests for concurrent refresh dedup and lock timeout" },
+        { "path": "tests/auth-retry.test.ts", "status": "added", "linesAdded": 15, "reason": "Tests for middleware retry on brief token invalidation" }
+      ]
+    }
+  ]
+}

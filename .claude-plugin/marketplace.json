@@ -1,0 +1,23 @@
+{
+  "name": "visual-changelog",
+  "owner": {
+    "name": "WebifyServices",
+    "email": "steve@webifyservices.com"
+  },
+  "metadata": {
+    "description": "Visual PR changelog plugin for Claude Code"
+  },
+  "plugins": [
+    {
+      "name": "visual-changelog",
+      "source": "./visual-changelog-plugin",
+      "description": "Visual PR changelog — generates structured JSON from git diffs and test results, rendered as an interactive visual report.",
+      "version": "0.1.0",
+      "author": {
+        "name": "WebifyServices"
+      },
+      "category": "developer-tools",
+      "keywords": ["changelog", "visual", "git", "pr-review", "developer-tools"]
+    }
+  ]
+}

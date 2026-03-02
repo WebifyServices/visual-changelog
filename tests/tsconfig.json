@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "esModuleInterop": true,
+    "strict": true,
+    "paths": {
+      "@schema/*": ["../visual-changelog-plugin/skills/changelog/schema/*"],
+      "@plugin/*": ["../visual-changelog-plugin/*"]
+    }
+  },
+  "include": ["./**/*.ts"]
+}

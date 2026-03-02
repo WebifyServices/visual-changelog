@@ -1,0 +1,8 @@
+{
+  "private": true,
+  "scripts": {
+    "test": "npm test --prefix tests",
+    "test:fast": "npm run test:fast --prefix tests",
+    "test:watch": "npm run test:watch --prefix tests"
+  }
+}

@@ -1,0 +1,3 @@
+viewer/node_modules/
+viewer/*.tsbuildinfo
+viewer/dist/entries

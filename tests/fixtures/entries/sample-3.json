@@ -1,0 +1,191 @@
+{
+  "id": "sample-3",
+  "title": "Add Role-Based Access Control",
+  "date": "2026-02-22T16:45:00Z",
+  "previousEntryId": "sample-2",
+  "git": {
+    "branch": "45-rbac",
+    "commitHash": "c7d8e9f",
+    "baseRef": "main",
+    "prNumber": 45
+  },
+  "sections": [
+    {
+      "type": "kpi-bar",
+      "title": "PR Impact",
+      "cards": [
+        { "label": "Lines Added", "value": 1243, "delta": "+1087", "trend": "up" },
+        { "label": "Lines Removed", "value": 89, "delta": "+47", "trend": "up" },
+        { "label": "Files Changed", "value": 18, "delta": "+12", "trend": "up" },
+        { "label": "Commits", "value": 11, "delta": "+8", "trend": "up" }
+      ]
+    },
+    {
+      "type": "prose",
+      "title": "Summary",
+      "content": "Adds a full role-based access control (RBAC) system on top of the JWT auth layer introduced in PR #42. Users are now assigned one or more roles (`admin`, `editor`, `viewer`), and API routes declare their required permissions via a `@requireRole` decorator.\n\nThe implementation follows a **policy-based model**: roles map to permission sets defined in `src/rbac/policies.ts`, making it easy to add new roles without touching route code. An `admin` dashboard route is included for managing user roles.\n\n### Key decisions\n\n- Roles stored in JWT claims (no extra DB lookup on each request)\n- Permission checks happen *after* token validation in the middleware chain\n- Superadmin bypass via `SUPERADMIN_EMAILS` env variable for emergency access\n- `403 Forbidden` responses include the missing permission for easier debugging"
+    },
+    {
+      "type": "heatmap",
+      "title": "Change Heatmap",
+      "root": {
+        "name": ".",
+        "changes": 1332,
+        "children": [
+          {
+            "name": "src",
+            "changes": 1012,
+            "children": [
+              {
+                "name": "rbac",
+                "changes": 480,
+                "children": [
+                  { "name": "roles.ts", "changes": 120 },
+                  { "name": "policies.ts", "changes": 95 },
+                  { "name": "middleware.ts", "changes": 110 },
+                  { "name": "decorators.ts", "changes": 85 },
+                  { "name": "types.ts", "changes": 40 },
+                  { "name": "index.ts", "changes": 30 }
+                ]
+              },
+              {
+                "name": "auth",
+                "changes": 165,
+                "children": [
+                  { "name": "jwt.ts", "changes": 65 },
+                  { "name": "middleware.ts", "changes": 55 },
+                  { "name": "types.ts", "changes": 45 }
+                ]
+              },
+              {
+                "name": "api",
+                "changes": 247,
+                "children": [
+                  { "name": "routes.ts", "changes": 72 },
+                  { "name": "admin.ts", "changes": 85 },
+                  { "name": "middleware.ts", "changes": 48 },
+                  { "name": "users.ts", "changes": 42 }
+                ]
+              },
+              {
+                "name": "config",
+                "changes": 60,
+                "children": [
+                  { "name": "rbac.ts", "changes": 35 },
+                  { "name": "env.ts", "changes": 25 }
+                ]
+              },
+              {
+                "name": "db",
+                "changes": 60,
+                "children": [
+                  { "name": "migrations/add-roles.ts", "changes": 40 },
+                  { "name": "models/user.ts", "changes": 20 }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "tests",
+            "changes": 270,
+            "children": [
+              { "name": "rbac.test.ts", "changes": 95 },
+              { "name": "rbac-policies.test.ts", "changes": 65 },
+              { "name": "admin.test.ts", "changes": 60 },
+              { "name": "auth.test.ts", "changes": 30 },
+              { "name": "api.test.ts", "changes": 20 }
+            ]
+          },
+          {
+            "name": "docs",
+            "changes": 50,
+            "children": [
+              { "name": "rbac.md", "changes": 35 },
+              { "name": "auth.md", "changes": 15 }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "test-suite",
+      "title": "Unit Tests (vitest)",
+      "runner": "vitest",
+      "passed": 178,
+      "failed": 1,
+      "skipped": 4,
+      "total": 183,
+      "duration": 4.2,
+      "delta": {
+        "passed": 26,
+        "failed": 1,
+        "skipped": 1,
+        "total": 28,
+        "newTests": 28
+      }
+    },
+    {
+      "type": "test-suite",
+      "title": "Integration Tests (vitest)",
+      "runner": "vitest",
+      "passed": 41,
+      "failed": 0,
+      "skipped": 2,
+      "total": 43,
+      "duration": 18.3,
+      "delta": {
+        "passed": 10,
+        "failed": 0,
+        "skipped": 1,
+        "total": 11,
+        "newTests": 11
+      }
+    },
+    {
+      "type": "test-suite",
+      "title": "E2E Tests (playwright)",
+      "runner": "playwright",
+      "passed": 12,
+      "failed": 0,
+      "skipped": 0,
+      "total": 12,
+      "duration": 45.8
+    },
+    {
+      "type": "file-list",
+      "title": "Changed Files",
+      "files": [
+        { "path": "src/rbac/roles.ts", "status": "added", "linesAdded": 120, "reason": "Role definitions and hierarchy (admin > editor > viewer)" },
+        { "path": "src/rbac/policies.ts", "status": "added", "linesAdded": 95, "reason": "Permission sets mapped to each role" },
+        { "path": "src/rbac/middleware.ts", "status": "added", "linesAdded": 110, "reason": "Express middleware that checks JWT role claims against route permissions" },
+        { "path": "src/rbac/decorators.ts", "status": "added", "linesAdded": 85, "reason": "@requireRole decorator for declarative route-level permission checks" },
+        { "path": "src/rbac/types.ts", "status": "added", "linesAdded": 40, "reason": "TypeScript types for roles, permissions, and policy definitions" },
+        { "path": "src/rbac/index.ts", "status": "added", "linesAdded": 30, "reason": "Public API barrel file for the RBAC module" },
+        { "path": "src/auth/jwt.ts", "status": "modified", "linesAdded": 40, "linesRemoved": 15, "reason": "Embed user roles in JWT claims during token generation" },
+        { "path": "src/auth/middleware.ts", "status": "modified", "linesAdded": 35, "linesRemoved": 12, "reason": "Extract roles from token and attach to request context" },
+        { "path": "src/auth/types.ts", "status": "modified", "linesAdded": 30, "linesRemoved": 8, "reason": "Added roles array to AuthPayload and TokenClaims interfaces" },
+        { "path": "src/api/routes.ts", "status": "modified", "linesAdded": 45, "linesRemoved": 18, "reason": "Applied @requireRole decorators to all route handlers" },
+        { "path": "src/api/admin.ts", "status": "added", "linesAdded": 85, "reason": "Admin dashboard endpoints for user role management" },
+        { "path": "src/api/middleware.ts", "status": "modified", "linesAdded": 30, "linesRemoved": 8, "reason": "Chain RBAC middleware after auth middleware in pipeline" },
+        { "path": "src/api/users.ts", "status": "modified", "linesAdded": 28, "linesRemoved": 6, "reason": "Include role info in user profile responses" },
+        { "path": "src/config/rbac.ts", "status": "added", "linesAdded": 35, "reason": "RBAC config: default role, superadmin emails, permission cache TTL" },
+        { "path": "src/config/env.ts", "status": "modified", "linesAdded": 15, "linesRemoved": 5, "reason": "Added SUPERADMIN_EMAILS and DEFAULT_ROLE env variables" },
+        { "path": "src/db/migrations/add-roles.ts", "status": "added", "linesAdded": 40, "reason": "Database migration adding roles column to users table" },
+        { "path": "src/db/models/user.ts", "status": "modified", "linesAdded": 12, "linesRemoved": 4, "reason": "Added roles field to User model with default value" },
+        { "path": "tests/rbac.test.ts", "status": "added", "linesAdded": 95, "reason": "Unit tests for role checking, hierarchy, and permission resolution" },
+        { "path": "tests/rbac-policies.test.ts", "status": "added", "linesAdded": 65, "reason": "Tests for policy definitions and edge cases" },
+        { "path": "tests/admin.test.ts", "status": "added", "linesAdded": 60, "reason": "Tests for admin role management endpoints" },
+        { "path": "tests/auth.test.ts", "status": "modified", "linesAdded": 20, "linesRemoved": 5, "reason": "Updated auth tests to include role claims in tokens" },
+        { "path": "tests/api.test.ts", "status": "modified", "linesAdded": 15, "linesRemoved": 3, "reason": "Added role headers to API integration test fixtures" },
+        { "path": "docs/rbac.md", "status": "added", "linesAdded": 35, "reason": "Developer guide for roles, permissions, and the @requireRole API" },
+        { "path": "docs/auth.md", "status": "modified", "linesAdded": 10, "linesRemoved": 5, "reason": "Updated auth docs to reference role claims in JWT" }
+      ]
+    },
+    {
+      "type": "mermaid",
+      "title": "RBAC Request Flow",
+      "definition": "graph TD\n  Client -->|request| AuthMiddleware\n  AuthMiddleware -->|extract token| JWTService\n  JWTService -->|decode claims| RBACMiddleware\n  RBACMiddleware -->|check permissions| PolicyEngine\n  PolicyEngine -->|allowed| RouteHandler\n  PolicyEngine -->|denied| ForbiddenResponse\n  RouteHandler --> UserService\n  RouteHandler --> AdminDashboard\n  AdminDashboard -->|manage roles| UserDB",
+      "caption": "Request flow through the auth + RBAC middleware chain"
+    }
+  ]
+}

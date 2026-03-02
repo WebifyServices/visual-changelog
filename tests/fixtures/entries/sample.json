@@ -1,0 +1,133 @@
+{
+  "id": "sample",
+  "title": "Add User Authentication Flow",
+  "date": "2026-02-20T14:30:00Z",
+  "git": {
+    "branch": "42-auth-flow",
+    "commitHash": "a1b2c3d",
+    "baseRef": "main",
+    "prNumber": 42
+  },
+  "sections": [
+    {
+      "type": "kpi-bar",
+      "title": "PR Impact",
+      "cards": [
+        { "label": "Lines Added", "value": 847, "trend": "up" },
+        { "label": "Lines Removed", "value": 123, "trend": "down" },
+        { "label": "Files Changed", "value": 14 },
+        { "label": "Commits", "value": 7 }
+      ]
+    },
+    {
+      "type": "prose",
+      "title": "Summary",
+      "content": "Introduces JWT-based authentication replacing the previous session cookie approach. The core change adds a `src/auth/` module with token generation, validation, and refresh logic. All existing API routes now pass through the auth middleware.\n\nThe migration is backward-compatible — existing sessions are honored for 30 days while clients transition to JWT. A new `/api/auth/refresh` endpoint handles token renewal."
+    },
+    {
+      "type": "heatmap",
+      "title": "Change Heatmap",
+      "root": {
+        "name": ".",
+        "changes": 970,
+        "children": [
+          {
+            "name": "src",
+            "changes": 820,
+            "children": [
+              {
+                "name": "auth",
+                "changes": 510,
+                "children": [
+                  { "name": "jwt.ts", "changes": 180 },
+                  { "name": "middleware.ts", "changes": 145 },
+                  { "name": "refresh.ts", "changes": 95 },
+                  { "name": "types.ts", "changes": 45 },
+                  { "name": "index.ts", "changes": 45 }
+                ]
+              },
+              {
+                "name": "api",
+                "changes": 210,
+                "children": [
+                  { "name": "routes.ts", "changes": 90 },
+                  { "name": "middleware.ts", "changes": 70 },
+                  { "name": "users.ts", "changes": 50 }
+                ]
+              },
+              {
+                "name": "config",
+                "changes": 100,
+                "children": [
+                  { "name": "auth.ts", "changes": 60 },
+                  { "name": "env.ts", "changes": 40 }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "tests",
+            "changes": 120,
+            "children": [
+              { "name": "auth.test.ts", "changes": 80 },
+              { "name": "api.test.ts", "changes": 40 }
+            ]
+          },
+          {
+            "name": "docs",
+            "changes": 30,
+            "children": [
+              { "name": "auth.md", "changes": 30 }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "test-suite",
+      "title": "Unit Tests (vitest)",
+      "runner": "vitest",
+      "passed": 142,
+      "failed": 2,
+      "skipped": 5,
+      "total": 149,
+      "duration": 3.4
+    },
+    {
+      "type": "test-suite",
+      "title": "Integration Tests (vitest)",
+      "runner": "vitest",
+      "passed": 28,
+      "failed": 0,
+      "skipped": 1,
+      "total": 29,
+      "duration": 12.7
+    },
+    {
+      "type": "file-list",
+      "title": "Changed Files",
+      "files": [
+        { "path": "src/auth/jwt.ts", "status": "added", "linesAdded": 180, "reason": "New JWT token generation and validation service" },
+        { "path": "src/auth/middleware.ts", "status": "added", "linesAdded": 145, "reason": "Express middleware for auth header extraction and token verification" },
+        { "path": "src/auth/refresh.ts", "status": "added", "linesAdded": 95, "reason": "Token refresh endpoint with rotation logic" },
+        { "path": "src/auth/types.ts", "status": "added", "linesAdded": 45, "reason": "Shared TypeScript interfaces for auth tokens and payloads" },
+        { "path": "src/auth/index.ts", "status": "added", "linesAdded": 45, "reason": "Public API barrel file for the auth module" },
+        { "path": "src/api/routes.ts", "status": "modified", "linesAdded": 52, "linesRemoved": 38, "reason": "Wrapped all routes with new auth middleware" },
+        { "path": "src/api/middleware.ts", "status": "modified", "linesAdded": 45, "linesRemoved": 25, "reason": "Added auth token extraction to request pipeline" },
+        { "path": "src/api/users.ts", "status": "modified", "linesAdded": 30, "linesRemoved": 20, "reason": "Updated user endpoints to use JWT identity" },
+        { "path": "src/config/auth.ts", "status": "added", "linesAdded": 60, "reason": "Auth configuration: token expiry, secret refs, refresh policy" },
+        { "path": "src/config/env.ts", "status": "modified", "linesAdded": 25, "linesRemoved": 15, "reason": "Added JWT_SECRET and TOKEN_EXPIRY env variables" },
+        { "path": "tests/auth.test.ts", "status": "added", "linesAdded": 80, "reason": "Unit tests for JWT generation, validation, and refresh" },
+        { "path": "tests/api.test.ts", "status": "modified", "linesAdded": 25, "linesRemoved": 15, "reason": "Updated API tests to include auth headers" },
+        { "path": "docs/auth.md", "status": "added", "linesAdded": 30, "reason": "Developer guide for the new authentication flow" },
+        { "path": "src/legacy/session.ts", "status": "deleted", "linesRemoved": 85, "reason": "Replaced by JWT-based auth — session cookies no longer used" }
+      ]
+    },
+    {
+      "type": "mermaid",
+      "title": "Auth Module Architecture",
+      "definition": "graph LR\n  Client --> AuthMiddleware\n  AuthMiddleware -->|valid token| APIRoutes\n  AuthMiddleware -->|expired| RefreshEndpoint\n  AuthMiddleware -->|invalid| LoginPage\n  RefreshEndpoint --> JWTService\n  JWTService --> TokenStore\n  APIRoutes --> UserService",
+      "caption": "Request flow through the new JWT authentication layer"
+    }
+  ]
+}
