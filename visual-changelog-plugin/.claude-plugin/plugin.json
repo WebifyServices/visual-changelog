@@ -1,6 +1,6 @@
 {
   "name": "visual-changelog",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Visual PR changelog — generates structured JSON from git diffs and test results, rendered as an interactive visual report.",
   "author": {
     "name": "WebifyServices",
