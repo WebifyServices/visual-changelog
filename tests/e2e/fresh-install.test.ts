@@ -66,11 +66,8 @@ describe.skipIf(process.env.FAST)(
       // Simulate what the skill does on first run: create project-local entries dir
       const entriesDir = path.join(tmpDir, "visual-changelog/entries");
       fs.mkdirSync(entriesDir, { recursive: true });
-      fs.writeFileSync(path.join(entriesDir, "manifest.json"), "[]");
 
-      expect(
-        fs.existsSync(path.join(tmpDir, "visual-changelog/entries/manifest.json"))
-      ).toBe(true);
+      expect(fs.existsSync(entriesDir)).toBe(true);
     });
 
     it("git diff commands produce output against temp repo", () => {

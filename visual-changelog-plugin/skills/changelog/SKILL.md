@@ -15,7 +15,7 @@ allowed-tools:
   - Bash(wc -l *)
   - Bash(find . *)
   - Bash(cat */visual-changelog/entries/*)
-  - Bash(cat */manifest.json*)
+  - Bash(ls */visual-changelog/entries/*.json)
   - Bash(cat */package.json*)
   - Bash(mkdir -p */visual-changelog/entries)
   - Bash(echo *)
@@ -77,9 +77,6 @@ ENTRIES_DIR="$PROJECT_ROOT/visual-changelog/entries"
 
 # Create entries directory on first run
 mkdir -p "$ENTRIES_DIR"
-if [ ! -f "$ENTRIES_DIR/manifest.json" ]; then
-  echo '[]' > "$ENTRIES_DIR/manifest.json"
-fi
 
 # Create local run script if it doesn't exist
 if [ ! -f "$PROJECT_ROOT/visual-changelog/run.sh" ]; then
@@ -97,7 +94,6 @@ fi
 
 - **File:** `$ENTRIES_DIR/{id}.json`
 - **Naming:** If the branch name starts with an issue number (e.g. `42-auth-refactor`), use that as the filename: `42-auth-refactor.json`. Otherwise use the full branch slug: `feature-new-login.json`.
-- **Manifest:** After writing the entry, read `$ENTRIES_DIR/manifest.json`, parse the JSON array, push the new filename, and write the updated array back. Do NOT overwrite — preserve existing entries.
 - **Schema:** Read `${CLAUDE_PLUGIN_ROOT}/skills/changelog/schema/types.ts` for the exact TypeScript types.
 
 ## Data Gathering
@@ -176,9 +172,9 @@ If NO test infrastructure is found, do not include any test-suite sections.
 
 ### Previous entry (conditional)
 
-Read `$ENTRIES_DIR/manifest.json`. If it has entries:
+Discover existing entries by globbing `$ENTRIES_DIR/*.json` (excluding `manifest.json`). For each file, read it and extract the `date` field. Sort by date descending to find the most recent entry. If entries exist:
 
-1. Load the last entry's JSON
+1. Load the most recent entry's JSON
 2. Set `previousEntryId` in the new entry
 3. Compute deltas:
    - KPI deltas: compare line counts, file counts between entries
@@ -219,6 +215,8 @@ node "${CLAUDE_PLUGIN_ROOT}/scripts/validate-entry.js" "$ENTRIES_DIR/{filename}"
 If it prints ERRORS, fix the JSON and re-validate. Do NOT write your own validation logic.
 
 ## After Writing
+
+If the project doesn't already ignore the generated manifest, add `visual-changelog/entries/manifest.json` to `.gitignore`. The manifest is generated at serve-time and should never be committed.
 
 Tell the user:
 - Entry written to `visual-changelog/entries/{filename}`

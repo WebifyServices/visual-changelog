@@ -15,6 +15,27 @@ fi
 # Symlink entries into dist so the viewer reflects live changes
 ln -sfn "$ENTRIES_DIR" "$PLUGIN_DIR/viewer/dist/entries"
 
+# Generate manifest from directory contents (never committed, always fresh)
+python3 -c "
+import json, glob, os
+entries_dir = '$ENTRIES_DIR'
+files = sorted(
+    [os.path.basename(f) for f in glob.glob(os.path.join(entries_dir, '*.json')) if os.path.basename(f) != 'manifest.json'],
+)
+# Sort by date field inside each entry for chronological order
+dated = []
+for f in files:
+    try:
+        with open(os.path.join(entries_dir, f)) as fh:
+            data = json.load(fh)
+            dated.append((data.get('date', ''), f))
+    except: dated.append(('', f))
+dated.sort(key=lambda x: x[0])
+manifest = [f for _, f in dated]
+with open(os.path.join(entries_dir, 'manifest.json'), 'w') as fh:
+    json.dump(manifest, fh, indent='\t')
+"
+
 # Try ports 5173-5183 until one works
 PORT=5173
 while lsof -ti:$PORT >/dev/null 2>&1; do
